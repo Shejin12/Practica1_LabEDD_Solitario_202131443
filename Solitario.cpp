@@ -112,6 +112,7 @@ struct Pila {
             Carta* inicio = tope;
             while (cont != num){
                 inicio = inicio->sig;
+                cont++;
             }
             size--;
             return inicio;
@@ -193,11 +194,10 @@ void crearCartas(){
 }
 
 void aleatorizar() {
-    int indiceAleatorio = rand() % listaCartas->tamanoPila();
+    int indiceAleatorio;
     while (!listaCartas->isEmpty()){
+        indiceAleatorio = rand() % listaCartas->tamanoPila() + 1;
         Carta* temp = listaCartas->buscarIndice(indiceAleatorio);
-        temp->sig->ant = temp->ant;
-        temp->ant->sig = temp->sig;
         listaAleatoria->push(temp);
     }
 }
