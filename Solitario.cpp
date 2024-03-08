@@ -1,5 +1,4 @@
 #include <iostream>
-<<<<<<< HEAD
 #include <cstring>
 #include <cstdlib>
 
@@ -7,15 +6,10 @@ using namespace std;
 
 
 //---------------------------------------------- ESTRUCTURA CARTA------------------------------------------------------
-=======
-using namespace std;
-
->>>>>>> f1999ae7ee00ef6f076046dda0a7c58009e5738b
 struct Carta
 {
     int num;
     char color;
-<<<<<<< HEAD
     string signo;
     bool bocaArriba;
     Carta* sig;
@@ -60,39 +54,6 @@ public: bool isApilable(Carta* recibir, Carta* colocar){
             return true;
         }
         return false;
-=======
-    char signo[3];
-    bool bocaArriba;
-    Carta* sig, ant; 
-
-    public char mostrarContenido(){
-        char numero;
-        if (num == 1)
-        {
-            numero = 'A';
-        } else if (num == 11)
-        {
-            numero = 'J'
-        } else if (num == 12)
-        {
-            numero = 'Q'
-        } else if (num == 13)
-        {
-            numero = 'K'
-        } else {
-            numero = num;
-        }
-        return  numero + ' ' + signo + ' ' + Color;
-    }
-
-    public bool isApilable(Carta* recibir, Carta* colocar){
-        bool apilable = false;
-        if (colocar->num < recibir->num && colocar->color != recibir->color && recibir->bocaArriba == true)
-        {
-            apilable = true;
-        }
-        return apilable;
->>>>>>> f1999ae7ee00ef6f076046dda0a7c58009e5738b
     }
 
 
@@ -100,7 +61,6 @@ public: bool isApilable(Carta* recibir, Carta* colocar){
 };
 
 
-<<<<<<< HEAD
 //---------------------------------------------- ESTRUCTURA PILA------------------------------------------------------
 struct Pila {
     Carta* tope;
@@ -272,13 +232,3 @@ int main() {
 
     return 0;
 }
-=======
-
-/*-----     INICIO    -----------------------------------------------------------------------------------*/
-
-int main()
-{
-    cout<<"hola mundo"<<endl;
-    return 0;
-}
->>>>>>> f1999ae7ee00ef6f076046dda0a7c58009e5738b
