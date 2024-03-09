@@ -30,21 +30,29 @@ struct Carta
 
 
     string mostrarContenido() {
-        string contenido;
-        if (num == 1) {
-            contenido += 'A';
-        } else if (num == 11) {
-            contenido += 'J';
-        } else if (num == 12) {
-            contenido += 'Q';
-        } else if (num == 13) {
-            contenido += 'K';
+        if (this == nullptr){
+            return "  []  ";
         } else {
-            contenido += to_string(num);
+            string contenido;
+            if (!bocaArriba){
+                contenido = "------";
+            }else {
+                if (num == 1) {
+                    contenido += 'A ';
+                } else if (num == 11) {
+                    contenido += 'J ';
+                } else if (num == 12) {
+                    contenido += 'Q ';
+                } else if (num == 13) {
+                    contenido += 'K ';
+                } else {
+                    contenido += to_string(num) + " ";
+                }
+                contenido += " " + signo;
+                contenido += color;
+            }
+            return contenido;
         }
-        contenido += " " + signo;
-        contenido += color;
-        return contenido;
     }
 
 
@@ -64,12 +72,20 @@ public: bool isApilable(Carta* recibir, Carta* colocar){
 //---------------------------------------------- ESTRUCTURA PILA------------------------------------------------------
 struct Pila {
     Carta* tope;
+    Carta* base;
     bool finalizada;
-    int size = 0;
+    int size = 0, numAceptar = 0;
 
     Pila() {
         tope = nullptr;
+        base = nullptr;
         finalizada = false;
+    }
+    Pila(int aceptar) {
+        tope = nullptr;
+        base = nullptr;
+        finalizada = false;
+        numAceptar = aceptar;
     }
 
     void push(Carta* carta) {
@@ -91,6 +107,9 @@ struct Pila {
         Carta* carta = tope;
         tope = tope->sig;
         size --;
+        if (size <= 0){
+            tope = nullptr;
+        }
         return carta;
     }
 
@@ -119,12 +138,28 @@ struct Pila {
         }
         return nullptr;
     }
+
+    void dibujarPila(Pila* original){
+        Pila* aux = new Pila();
+        while (!original->isEmpty()){
+            aux->push(original->pop());
+            cout<<aux->tope->mostrarContenido() + " | ";
+        }
+        cout<<endl;
+        while (!aux->isEmpty()){
+            original->push(aux->pop());
+        }
+    }
 };
+
+
+
 
 //---------------------------------------------- ESTRUCTURA COLA------------------------------------------------------
 struct Cola {
     Carta* frente;
     Carta* final;
+    int numAceptar = 0;
 
     Cola() {
         frente = nullptr;
@@ -178,7 +213,7 @@ void crearCartas(){
             signo = "<>";
         }else if (i == 1){
             color = 'N';
-            signo = "^^";
+            signo = "!!";
         } else if (i == 2){
             color = 'R';
             signo = "<3";
@@ -187,8 +222,19 @@ void crearCartas(){
             signo = "E3";
         }
         for (int j = 1; j <= 13; j++) {
-            Carta *creada = new Carta(j, color, signo, true, nullptr, nullptr);
+            Carta *creada = new Carta(j, color, signo, false, nullptr, nullptr);
             listaCartas->push(creada);
+        }
+    }
+}
+
+void repartirCartas(Cola* Mazo, Pila* ListaMazo[]){
+    for (int i = 1; i < 25; ++i) {
+        Mazo->encolar(listaCartas->pop());
+    }
+    for (int i = 0; i < 7; ++i) {
+        for (int j = 0; j < ListaMazo[i]->numAceptar; ++j) {
+            ListaMazo[i]->push(listaCartas->pop());
         }
     }
 }
@@ -209,19 +255,65 @@ void aleatorizar() {
 
 
 
+
 //---------------------------------------------- INICIO ------------------------------------------------------
 int main() {
+    Cola* ListaCerradas = new Cola();
+    Cola* ListaAbiertas = new Cola();
+    Pila* Mazos[7];
+    bool finJuego = false;
+    for (int i = 0; i < 7; ++i) {
+        Mazos[i]  = new Pila(i+1);
+    }
+    Pila* Colocadas[4];
+    for (int i = 0; i < 3; ++i) {
+        Colocadas[i] = new Pila();
+    }
 
     crearCartas();
+    repartirCartas(ListaCerradas, Mazos);
 
-    /* Probando si funciona la creacion de Cartas
+    while (!finJuego){
+        cout<<"                     SOLITARIO"<<endl;
+        cout<<"     CARTAS"<<endl;
+        cout<<"Mazo Cerradas:   "<<ListaCerradas->frente->mostrarContenido()<<endl;
+        cout<<"Mazo Abiertas:   "<<ListaAbiertas->frente->mostrarContenido()<<endl;
+        cout<<""<<endl;
+
+        cout<<"     MAZOS en JUEGO"<<endl;
+        for (int i = 0; i < 7; ++i) {
+            cout<<"Mazo "<< i+1 << ":          | "; Mazos[i]->dibujarPila(Mazos[i]);
+        }
+        cout<<endl;
+
+        cout<<"     HECHOS"<<endl;
+        for (int i = 0; i < 4; ++i) {
+            cout<<"Mazo "<< i+1 << ":          "<<Colocadas[i]->tope->mostrarContenido()<<endl;
+        }
+        cout<<endl;
+
+        int opcion;
+        cout<<"Elija su movimiento"<<endl;
+        cout<<"1.   Revelar Carta"<<endl;
+        cout<<"2.   Mover de Mazo Abierto a un Mazo en Juego "<<endl;
+        cout<<"3.   Mover de un Mazo en Juego a otro Mazo en Juego"<<endl;
+        cout<<"4.   Mover de un Mazo en Juego a un Mazo Hecho"<<endl;
+        cout<<"5.   Salir"<<endl;
+
+        cout<<"Ingrese su opcion";
+        cin>>opcion;
+    }
+
+
+    /*
+                                            Probando si funciona la creacion de Cartas, funciona correctamente :)
     cout << "Pila:" << endl;
     while (!listaCartas->isEmpty()) {
         Carta* carta = listaCartas->pop();
         cout << carta->mostrarContenido() << endl;
-    }*/
+    }
 
-    cout<<"---------------------------------------------------------------"<<endl;
+                                            FUNCION PARA ALEATORIZAR LAS CARTAS Y MOSTRARLAS, NO FUNCIONA TODAVÍA :c
     aleatorizar();
 
     cout << "Pila: aleatoria" << endl;
@@ -229,6 +321,7 @@ int main() {
         Carta* carta = listaAleatoria->pop();
         cout << carta->mostrarContenido() << endl;
     }
+    */
 
     return 0;
 }
