@@ -38,13 +38,15 @@ struct Carta
                 contenido = "------";
             }else {
                 if (num == 1) {
-                    contenido += 'A ';
+                    contenido += "A ";
                 } else if (num == 11) {
-                    contenido += 'J ';
+                    contenido += "J ";
                 } else if (num == 12) {
-                    contenido += 'Q ';
+                    contenido += "Q ";
                 } else if (num == 13) {
-                    contenido += 'K ';
+                    contenido += "K ";
+                } else if(num == 10) {
+                    contenido += to_string(num);
                 } else {
                     contenido += to_string(num) + " ";
                 }
