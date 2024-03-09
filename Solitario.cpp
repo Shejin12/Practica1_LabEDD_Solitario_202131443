@@ -143,12 +143,12 @@ struct Pila {
         Pila* aux = new Pila();
         while (!original->isEmpty()){
             aux->push(original->pop());
-            cout<<aux->tope->mostrarContenido() + " | ";
         }
-        cout<<endl;
         while (!aux->isEmpty()){
             original->push(aux->pop());
+            cout<<original->tope->mostrarContenido() + " | ";
         }
+        cout<<endl;
     }
 };
 
@@ -236,6 +236,7 @@ void repartirCartas(Cola* Mazo, Pila* ListaMazo[]){
         for (int j = 0; j < ListaMazo[i]->numAceptar; ++j) {
             ListaMazo[i]->push(listaCartas->pop());
         }
+        ListaMazo[i]->tope->bocaArriba = true;
     }
 }
 
