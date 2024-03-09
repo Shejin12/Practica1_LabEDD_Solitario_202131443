@@ -66,6 +66,18 @@ public: bool isApilable(Carta* recibir, Carta* colocar){
         return false;
     }
 
+public: bool isApilableHecho(Carta* recibir, Carta* colocar){
+        if (colocar == nullptr){
+            return true;
+        } else {
+            if (colocar->num == recibir->num+1 && colocar->signo == recibir->signo && recibir->bocaArriba == true)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
 
 
 };
@@ -115,6 +127,20 @@ struct Pila {
         return carta;
     }
 
+    Carta* popJuego() {
+        if (tope == nullptr) {
+            return nullptr;
+        }
+        Carta* carta = tope;
+        tope = tope->sig;
+        tope->bocaArriba = true;
+        size --;
+        if (size <= 0){
+            tope = nullptr;
+        }
+        return carta;
+    }
+
     Carta* top() {
         return tope;
     }
@@ -157,6 +183,10 @@ struct Pila {
 
 
 
+
+
+
+
 //---------------------------------------------- ESTRUCTURA COLA------------------------------------------------------
 struct Cola {
     Carta* frente;
@@ -172,9 +202,12 @@ struct Cola {
         if (final == nullptr) {
             frente = carta;
             final = carta;
+            carta->bocaArriba = false;
         } else {
             final->sig = carta;
+            carta->ant = final;
             final = carta;
+            final->bocaArriba = false;
         }
     }
 
@@ -187,6 +220,17 @@ struct Cola {
         if (frente == nullptr) {
             final = nullptr;
         }
+        return carta;
+    }
+
+    Carta* decolarFinal(){
+        if (final == nullptr) {
+            return nullptr;
+        }
+        Carta* carta = final;
+        final = final->ant;
+        final->ant->bocaArriba = true;
+        final->ant->sig = nullptr;
         return carta;
     }
 
@@ -251,6 +295,47 @@ void aleatorizar() {
     }
 }
 
+void revelarCarta(Cola* inicial, Cola* final){
+    if (inicial->isEmpty()){
+        inicial->regresarCartas(final);
+    } else {
+        final->encolar(inicial->decolar());
+        final->final->bocaArriba = true;
+    }
+}
+
+void moverAbiertoJuego(Cola* inicial, Pila* colocar){
+    if (inicial->final->isApilable(colocar->tope, inicial->final)){
+        colocar->push(inicial->decolarFinal());
+    } else {
+        cout<<"Movimiento Invalido"<<endl;
+        cout<<"Presione Enter para Continuar"<<endl;
+        string pres;
+        cin>>pres;
+    }
+}
+
+void moverJuegoAJuego(Pila* colocar, Pila* recibir){
+    if (colocar->tope->isApilable(recibir->tope, colocar->tope)){
+        recibir->push(colocar->popJuego());
+    } else {
+        cout<<"Movimiento Invalido"<<endl;
+        cout<<"Presione Enter para Continuar"<<endl;
+        string pres;
+        cin>>pres;
+    }
+}
+
+void moverJuegoAHecho(Pila* inicial, Pila* hecha){
+    if (inicial->tope->isApilableHecho(inicial->tope, hecha->tope)){
+        hecha->push(inicial->popJuego());
+    } else {
+        cout<<"Movimiento Invalido"<<endl;
+        cout<<"Presione Enter para Continuar"<<endl;
+        string pres;
+        cin>>pres;
+    }
+}
 
 
 
@@ -269,7 +354,7 @@ int main() {
         Mazos[i]  = new Pila(i+1);
     }
     Pila* Colocadas[4];
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i <= 3; ++i) {
         Colocadas[i] = new Pila();
     }
 
@@ -280,7 +365,7 @@ int main() {
         cout<<"                     SOLITARIO"<<endl;
         cout<<"     CARTAS"<<endl;
         cout<<"Mazo Cerradas:   "<<ListaCerradas->frente->mostrarContenido()<<endl;
-        cout<<"Mazo Abiertas:   "<<ListaAbiertas->frente->mostrarContenido()<<endl;
+        cout<<"Mazo Abiertas:   "<<ListaAbiertas->final->mostrarContenido()<<endl;
         cout<<""<<endl;
 
         cout<<"     MAZOS en JUEGO"<<endl;
@@ -303,8 +388,76 @@ int main() {
         cout<<"4.   Mover de un Mazo en Juego a un Mazo Hecho"<<endl;
         cout<<"5.   Salir"<<endl;
 
-        cout<<"Ingrese su opcion";
+        cout<<"Ingrese su opcion :";
         cin>>opcion;
+
+        switch (opcion) {
+
+
+            case 1:
+                revelarCarta(ListaCerradas, ListaAbiertas);
+                break;
+
+
+            case 2:
+                cout<<"Ingrese el indice del Mazo para moverlo :";
+                int mazo;
+                cin>> mazo;
+                if (mazo < 1 || mazo > 7){
+                    cout<<"Movimiento Invalido"<<endl;
+                    cout<<"Presione Enter para Continuar"<<endl;
+                    string pres;
+                    cin>>pres;
+                } else {
+                    moverAbiertoJuego(ListaAbiertas, Mazos[mazo-1]);
+                }
+                break;
+
+
+            case 3:
+                int mazoSalir, mazoRecibe;
+                cout<<"Ingrese el indice del Mazo del que quitar la carta :";
+                cin>> mazoSalir;
+                cout<<endl;
+                cout<<"Ingrese el indice del Mazo donde colocar la carta :";
+                cin>> mazoRecibe;
+                cout<<endl;
+                if (mazoSalir < 1 || mazoSalir > 7 || mazoRecibe < 1 || mazoRecibe > 7){
+                    cout<<"Movimiento Invalido"<<endl;
+                    cout<<"Presione Enter para Continuar"<<endl;
+                    string pres;
+                    cin>>pres;
+                } else {
+                    moverJuegoAJuego(Mazos[mazoSalir-1], Mazos[mazoRecibe-1]);
+                }
+                break;
+
+
+            case 4:
+                int mazoSacar, hechoRecibe;
+                cout<<"Ingrese el indice del Mazo del que quitar la carta :";
+                cin>> mazoSacar;
+                cout<<endl;
+                cout<<"Ingrese el indice del Mazo donde colocar la carta :";
+                cin>> hechoRecibe;
+                cout<<endl;
+                if (hechoRecibe < 1 || hechoRecibe > 4 || mazoSacar < 1 || mazoSacar > 7){
+                    cout<<"Movimiento Invalido"<<endl;
+                    cout<<"Presione Enter para Continuar"<<endl;
+                    string pres;
+                    cin>>pres;
+                } else {
+                    moverJuegoAHecho(Mazos[mazoSacar-1], Colocadas[hechoRecibe-1]);
+                }
+                break;
+
+            case 5:
+                finJuego = true;
+                break;
+        }
+        cout<<""<<endl;
+        cout<<"**********************************************************************************************************"<<endl;
+        cout<<""<<endl;
     }
 
 
